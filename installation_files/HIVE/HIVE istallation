@@ -1,0 +1,217 @@
+------------------------------------------------------------------------
+INSTALL HIVE 
+------------------------------------------------------------------------
+## rivedi HDFS_installation (word) per i commenti sulle istruzioni
+
+# download installation file
+http://www.apache.org/dyn/closer.cgi/hive/
+https://mirror.nohup.it/apache/hive/
+
+# tar installation file
+tar -xzf apache-hive-3.1.2-bin.tar.gz
+
+# move apache-hive-3.1.2-bin.tar.gz in Downloads
+sudo mv apache-hive-3.1.2-bin.tar.gz /home/Downloads
+
+# edit bashrc
+sudo nano /etc/bash.bashrc
+
+export HIVE_HOME=/home/mdba/apache-hive-3.1.2-bin
+export HADOOP_MAPRED_HOME=
+export PATH=$PATH:$HIVE_HOME/bin
+
+# source bashrc
+source /etc/bash.bashrc
+
+
+------------------------------------------------------------------------
+CONFIGURE HIVE 
+------------------------------------------------------------------------
+
+# edit /usr/local/hadoop/hadoop-3.1.2/etc/hadoop/core-site.xml
+sudo nano /usr/local/hadoop/hadoop-3.1.2/etc/hadoop/core-site.xml
+----------------
+<configuration>
+   <property>
+      <name>hadoop.proxyuser.mdba.groups</name>
+      <value>*</value>
+   </property>
+   <property>
+      <name>hadoop.proxyuser.mdba.hosts</name>
+      <value>*</value>
+   </property>
+   <property>
+      <name>hadoop.proxyuser.server.hosts</name>
+      <value>*</value>
+   </property>
+   <property>
+      <name>hadoop.proxyuser.server.groups</name>
+      <value>*</value>
+   </property>
+</configuration>
+----------------
+
+# /usr/local/hadoop/hadoop-3.1.2/etc/hadoop/mapred-site.xml
+sudo nano /usr/local/hadoop/hadoop-3.1.2/etc/hadoop/mapred-site.xml
+---------------- 
+<configuration>
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+    </property>
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value>
+    </property>
+</configuration>
+----------------
+
+# opppure
+sudo nano /usr/local/hadoop/hadoop-3.1.2/etc/hadoop/mapred-site.xml
+---------------- 
+<configuration>
+    <property>
+        <name>yarn.app.mapreduce.am.env</name>
+        <value>HADOOP_MAPRED_HOME=/usr/local/hadoop/hadoop-3.1.2</value>
+    </property>
+    <property>
+        <name>mapreduce.map.env</name>
+        <value>HADOOP_MAPRED_HOME=/usr/local/hadoop/hadoop-3.1.2</value>
+    </property>
+    <property>
+        <name>mapreduce.reduce.env</name>
+        <value>HADOOP_MAPRED_HOME=/usr/local/hadoop/hadoop-3.1.2</value>
+    </property>
+</configuration>
+----------------
+
+-------------------------------------------------------------------------
+HDFS and YARN start
+-------------------------------------------------------------------------
+
+# HDFS start
+start-dfs.sh
+--Starting namenodes on [localhost]
+--Starting datanodes
+--Starting secondary namenodes [bigdataMDBA]
+--bigdataMDBA: Warning: Permanently added 'bigdatamdba' (ECDSA) to the list of known hosts.
+
+# YARN start
+start-yarn.sh
+--Starting resourcemanager
+--Starting nodemanagers
+
+# hadoop fs
+hadoop fs -ls /
+-- Found 1 items
+-- drwxr-xr-x   - mdba supergroup          0 2020-03-14 09:55 /test
+
+
+------------------------------------------------------------------------
+CREATE directories
+------------------------------------------------------------------------
+
+# create hadoop fs tmp directory
+hadoop fs -mkdir /tmp
+
+# create hadoop fs warehouse directory
+hadoop fs -mkdir /user
+hadoop fs -mkdir /user/hive
+hadoop fs -mkdir /user/hive/warehouse
+hadoop fs -ls /
+-- drwxr-xr-x   - mdba supergroup          0 2020-03-14 09:55 /test
+-- drwxr-xr-x   - mdba supergroup          0 2020-03-16 11:13 /tmp
+-- drwxr-xr-x   - mdba supergroup          0 2020-03-16 11:14 /user
+
+# give write permission to tmp directory
+hadoop fs -chmod g+w /tmp
+
+# give write permission to warehouse directory
+hadoop fs -chmod g+w /user/hive/warehouse
+
+
+------------------------------------------------------------------------
+INIT DERBY database
+------------------------------------------------------------------------
+
+# init Schema
+schematool -dbType derby -initSchema
+-- Initialization script completed
+-- schemaTool completed
+
+
+------------------------------------------------------------------------
+START HIVE
+------------------------------------------------------------------------
+## genericamente è meglio splittare in due shell per avere nella prima 
+## indicazioni sullo start delle sessioni e correttezze delle operazioni(ok).
+## sulla seconda vedo gli ouput dei comandi mysql
+
+
+# FIRST SHELL
+# start HIVE system ## deve aprire 4 sessioni
+hiveserver2
+-- Hive Session ID = 2b98ddb0-664b-452f-bb6f-77e770906365
+-- Hive Session ID = 342c089f-de61-475c-a95a-4189128f5810
+-- Hive Session ID = 185434e2-b7f9-43ca-a58f-eed5bb95ba47
+-- Hive Session ID = 688bcdf2-81ab-427e-8132-b6aca96225e4
+(waiting shell)
+
+# SECOND SHELL
+# start HIVE shell
+beeline -n mdba -u jdbc:hive2://localhost:10000 ## indirizzo standard
+-- Connecting to jdbc:hive2://localhost:10000
+-- Connected to: Apache Hive (version 3.1.2)
+-- Driver: Hive JDBC (version 2.3.6)
+-- Transaction isolation: TRANSACTION_REPEATABLE_READ
+-- Beeline version 2.3.6 by Apache Hive
+-- 0: jdbc:hive2://localhost:10000> 
+
+# vefify databases list
+jdbc:hive2://localhost:10000> show databases;
+-- ...
+-- .INFO  : OK
+-- .INFO  : Concurrency mode is disabled, not creating a lock manager
+-- .+----------------+
+-- .| database_name  |
+-- .+----------------+
+-- .| default        |
+-- .+----------------+
+-- .1 row selected (4.811 seconds)
+
+
+------------------------------------------------------------------------
+STOP HIVE
+------------------------------------------------------------------------
+
+# SECOND SHELL
+# stopp HIVE shell
+CRTL-C 
+
+
+# FIRST SHELL
+# stop HIVE system
+CRTL-C 
+
+
+-------------------------------------------------------------------------
+HDFS and YARN stop
+-------------------------------------------------------------------------
+
+# YARN stop
+stop-yarn.sh
+--Starting resourcemanager
+--Starting nodemanagers
+
+# HDFS stop
+stop-dfs.sh
+--Starting namenodes on [localhost]
+--Starting datanodes
+--Starting secondary namenodes [bigdataMDBA]
+--bigdataMDBA: Warning: Permanently added 'bigdatamdba' (ECDSA) to the list of known hosts.
+
+-------------------------------------------------------------------------

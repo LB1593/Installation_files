@@ -1,0 +1,60 @@
+zookeeper installation
+----------------------
+
+dpkg -l | grep zookeeper
+
+sudo apt-get remove zookeeper
+sudo apt-get remove --auto-remove zookeeper
+sudo apt-get purge zookeeper
+sudo apt-get purge --auto-remove zookeeper
+
+---------------------------------------------------------------
+
+https://zookeeper.apache.org/releases.html
+
+download: apache-zookeeper-3.6.0-bin.tar.gz 
+
+sudo mkdir -p /usr/local/zookeeper
+
+tar -zxf /home/mdba/Downloads/apache-zookeeper-3.6.0-bin.tar.gz
+sudo mv /home/mdba/apache-zookeeper-3.6.0-bin /usr/local/zookeeper
+
+sudo mkdir -p /var/lib/zookeeper
+
+cat > /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/conf/zoo.cfg << EOF
+
+> tickTime=2000
+> dataDir=/var/lib/zookeeper
+> clientPort=2181
+> EOF
+
+===============================================================
+
+sudo /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/zkServer.sh start
+
+# /usr/bin/java
+# ZooKeeper JMX enabled by default
+# Using config: /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/../conf/zoo.cfg
+# Starting zookeeper ... STARTED
+
+-- test zookeeper ---------------------------------------------
+
+telnet localhost 2181
+
+# Trying 127.0.0.1...
+# Connected to localhost.
+# Escape character is '^]'.
+# ^C Connection closed by foreign host.
+
+---------------------------------------------------------------
+
+sudo /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/zkServer.sh stop
+
+# /usr/bin/java
+# ZooKeeper JMX enabled by default
+# Using config: /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/../conf/zoo.cfg
+# Stopping zookeeper ... STOPPED
+
+===============================================================
+
+

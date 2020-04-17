@@ -1,0 +1,65 @@
+===========================================================================
+
+# Create topic: "tcorso"
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic tcorso
+--Created topic "tcorso".
+
+
+#Describe topic: "tcorso"
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic tcorso
+
+
+--topic tcorso
+--Topic:tcorso	PartitionCount:1	ReplicationFactor:1Configs:
+--	Topic: tcorso	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
+
+===========================================================================
+===========================================================================
+FIRST SHELL
+
+#Produce messages to topic: "tcorso"
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic tcorso
+
+>Test Message 1
+>Test Message 2
+>Test Message 3
+^C
+
+===========================================================================
+===========================================================================
+SECOND SHELL
+
+#Consume messages from topic: "tcorso"
+
+## STO METTENDO IN COMUNICAZIONE PRODUCER E CONSUMER, IN RIFERIMENTO AD UN CERTO TOPIC!!!
+
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic tcorso --from-beginning
+
+Test Message 1
+Test Message 2
+Test Message 3
+^C
+
+--consumer:
+--Processed a total of 3 messages
+
+===========================================================================
+===========================================================================
+
+# List topics
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --zookeeper localhost:2181 --list
+
+#Delete topic: "tcorso"
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --zookeeper localhost:2181 --delete --topic tcorso
+--[sudo] password for mdba: 
+--Topic tcorso is marked for deletion.
+--Note: This will have no impact if delete.topic.enable is not set to true.
+
+## la topic è mercata quindi al ravvio di kafka verrà eliminata
+
+===========================================================================
+
+
+
+
+

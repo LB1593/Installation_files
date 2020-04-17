@@ -1,0 +1,121 @@
+-----------------------------------------------------------------------------
+START Spark 
+-----------------------------------------------------------------------------
+
+# Run Spark Shell 
+spark-shell 
+
+
+-----------------------------------------------------------------------------
+Create a new RDD
+-----------------------------------------------------------------------------
+
+# Create a file data.txt in Spark_Home directory
+
+# Read File from local filesystem and create an RDD.
+
+# Note that sc is the object of SparkContext
+scala> val data = sc.textFile("/home/mdba/sparkExamples/data.txt")
+-- data: org.apache.spark.rdd.RDD[String] = /home/mdba/sparkExamples/data.txt MapPartitionsRDD[1] at textFile at <console>:24
+
+# print data (it is a metadata)
+scala> print(data)
+-- /home/mdba/sparkExamples/data.txt MapPartitionsRDD[1] at textFile at <console>:24
+
+# Define an array
+scala> val no = Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+-- no: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+# print no (it is a metadata)
+scala> print(no)
+-- /[I@1936513a  ## è il puntatore
+
+# Create an RDD through Parallelized Collection
+scala> val noData = sc.parallelize(no)
+--noData: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[2] at parallelize at <console>:26
+
+# print noData (it is a metadata)
+scala> print(noData)
+-- ParallelCollectionRDD[2] at parallelize at <console>:26
+
+
+## sostanzialmente io non accedo a nulla fino a che non creo uno SPARK CONTEXT
+
+
+# Create from an Existing RDDs
+scala> val newRDD = no.map(data => (data * 2))
+-- newRDD: Array[Int] = Array(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+
+# print newRDD (it is a metadata)
+scala> print(newRDD)
+-- [I@27ef226
+
+
+-----------------------------------------------------------------------------
+Actions and transformations
+-----------------------------------------------------------------------------
+
+# Count the number of items available in the RDD 
+# (it is an action). 
+## spark fa il conteggio con il suo algoritmo
+scala> val CTData = data.count() ## conto il numero di righe nel file (data-->txt)
+-- CTData: Long = 10
+
+# print data.count (it is a data)
+scala> print(CTData)
+-- 10
+
+# Filter the RDD and create new RDD of items which contain word “Pyramus” 
+# (it is a transformation). 
+scala> val DFData = data.filter(line => line.contains("Pyramus"))
+-- DFData: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[4] at filter at <console>:25
+
+# print data.filter (it is a metadata)
+scala> print(DFData)
+-- MapPartitionsRDD[3] at filter at <console>:26
+
+# Transformation and Action together(conto le linee cha hanno una certa parola"" è case-sensitive)
+scala> val FRData = data.filter(line => line.contains("Pyramus")).count()
+-- FRData: Long = 2
+
+# print data.filter (it is a data)
+scala> print(FRData)
+-- 2
+
+# Transformation and Action together
+scala> val FRData = data.filter(line => line.contains("the")).count()
+-- FRData: Long = 7
+
+# print data.filter (it is a data)
+scala> print(FRData)
+-- 7
+
+-----------------------------------------------------------------------------
+Other Actions and transformations
+-----------------------------------------------------------------------------
+
+# read the first item from the RDD ( se per esempio RDD è un txt ottengo la prima linea di commento)
+scala> val FTData = data.first()
+-- FTData: String = ‘Robin Starveling, you must play Thisbe’s mother. Tom Snout, the tinker?’
+
+# print first item (it is a data)
+scala> print(FTData)
+-- ‘Robin Starveling, you must play Thisbe’s mother. Tom Snout, the tinker?’
+
+# Read the first 5 items from the RDD
+scala> val FVData = data.take(5)
+--FVData: Array[String] = Array(‘Robin Starveling, you must play Thisbe’s mother. Tom Snout, the tinker?’, ‘Here, Peter Quince.’ Snout smiled., ‘You, Pyramus’ father. Myself, Thisbe’s father. Snug the joiner, you the lion’s part. And I hope the play’s all cast now.’, Snug looked bewildered and he slowly mouthed the word ‘lion’. He put his hand up and Quince nodded. ‘Have you written the lion’s part out?’ said Snug. ‘I’m a very slow learner.’, ‘You can make it up,’ said Quince reassuringly, ‘because it’s nothing but roaring.’)
+
+# print first 5 items (it is a metadata)
+scala> print(FVData)
+-- [Ljava.lang.String;@43a99a43
+
+# RDD count the number of partitions
+scala> val PNData = data.partitions.length
+-- PNData: Int = 2
+
+# print number of partitions (it is a data)
+scala> print(PNData)
+-- 2
+
+-----------------------------------------------------------------------------

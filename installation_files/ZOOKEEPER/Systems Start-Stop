@@ -1,0 +1,104 @@
+========================================================================
+
+# PROCESSES LIST
+ps -ef | grep myprocessname
+
+
+# PROCESSES KILL
+sudo killall myprocessname 
+
+========================================================================
+========================================================================
+
+# ZOOKEEPER START
+sudo /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/zkServer.sh start
+--[sudo] password for mdba: 
+--ZooKeeper JMX enabled by default
+--Using config: /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/../conf/zoo.cfg
+--Starting zookeeper ... STARTED
+
+
+# ZOOKEEPER PORT TEST
+telnet localhost 2181
+--Trying 127.0.0.1...
+--Connected to localhost.
+--Escape character is '^]'.
+
+
+# ZOOKEEPER STOP
+sudo /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/zkServer.sh stop
+--ZooKeeper JMX enabled by default
+--Using config: /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/../conf/zoo.cfg
+--Stopping zookeeper ... STOPPED
+
+========================================================================
+========================================================================
+
+# KAFKA START
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-server-start.sh -daemon /usr/local/kafka/kafka_2.13-2.4.0/config/server.properties
+
+
+# KAFKA PORT TEST
+telnet localhost 9092
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+
+
+# KAFKA CLUSTER TEST
+## Permette di capire se IL cluster sta su e controllare i nodi Kafka
+
+## Sto chiedendo , tramite zookeeper, quali e quanti nodi di Kafka sono attivi.Sfrutto la shell di ZK.
+
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/zookeeper-shell.sh localhost:2181 ls /brokers/ids
+--bin/zookeeper-shell.sh localhost:2181 ls /brokers/ids
+--Connecting to localhost:2181
+--
+--WATCHER::
+--
+--WatchedEvent state:SyncConnected type:None path:null
+--[0]
+
+
+# KAFKA TOPICS TEST
+
+## Chiedo a ZK , quante topic(MESSAGGI=TABELLE) ci sono nel cluster
+
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/zookeeper-shell.sh localhost:2181 ls /brokers/topics
+--[sudo] password for mdba: 
+--Connecting to localhost:2181
+--
+--WATCHER::
+--
+--WatchedEvent state:SyncConnected type:None path:null
+--[__consumer_offsets, test]
+
+
+# KAFKA LIST TOPICS
+
+## qua chiedo i TOPICS ma sulla shell KAFKA
+
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --zookeeper localhost:2181 --list   
+---__consumer_offsets
+--test
+
+
+# KAFKA DESCRIBE TOPIC 
+
+## descrivo la topic del cluster
+
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic test
+
+## NOTIAMO IL N DI PARTIZIONI=1(DEFAULT) e IL FATTORE DI REPLICAZIONI=1(DEFAULT)
+--Topic:test	PartitionCount:1	ReplicationFactor:1	Configs:
+--	Topic: test	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
+
+
+# KAFKA STOP
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-server-stop.sh
+--[sudo] password for mdba:
+
+========================================================================
+
+
+

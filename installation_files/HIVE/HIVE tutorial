@@ -1,0 +1,411 @@
+========================================================================
+CREATE DATABASE 
+========================================================================
+
+Syntax:
+1.	CREATE (DATABASE|SCHEMA) [IF NOT EXISTS] database_name
+2.	[COMMENT database_comment]
+3.	[LOCATION hdfs_path]
+4.	[WITH DBPROPERTIES (property_name=property_value, ...)];
+
+#command
+CREATE DATABASE IF NOT EXISTS testDB COMMENT "Database di Test" LOCATION '/user/hive/warehouse/newdb' WITH DBPROPERTIES ('createdBy'='testDB');
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (0.678 seconds)
+
+
+------------------------------------------------------------------------
+SHOW DATABASES 
+------------------------------------------------------------------------
+
+Syntax:
+1.	SHOW (DATABASES|SCHEMAS);
+
+#command
+SHOW DATABASES;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- +----------------+
+-- | database_name  |
+-- +----------------+
+-- | default        |
+-- | testdb         |
+-- +----------------+
+-- 2 rows selected (0.252 seconds)
+
+
+------------------------------------------------------------------------
+DESCRIBE DATABASE 
+------------------------------------------------------------------------
+
+Syntax:
+1.	DESCRIBE DATABASE/SCHEMA [EXTENDED] db_name;
+
+#command
+DESCRIBE DATABASE testDB;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- +----------+-------------------+--------------------------------------------------+-------------+-------------+-------------+
+-- | db_name  |      comment      |                     location                     | owner_name  | owner_type  | parameters  |
+-- +----------+-------------------+--------------------------------------------------+-------------+-------------+-------------+
+-- | testdb   | Database di Test  | hdfs://localhost:9000/user/hive/warehouse/newdb  | mdba        | USER        |             |
+-- +----------+-------------------+--------------------------------------------------+-------------+-------------+-------------+
+-- 1 row selected (0.276 seconds)
+
+
+------------------------------------------------------------------------
+USE DATABASE 
+------------------------------------------------------------------------
+
+Syntax:
+1.	USE database_name;
+
+#command
+USE testDB;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (0.233 seconds)
+
+
+------------------------------------------------------------------------
+DROP DATABASE (non eseguire)
+------------------------------------------------------------------------
+
+Syntax:
+1.	DROP (DATABASE|SCHEMA) [IF EXISTS] database_name [RESTRICT|CASCADE];
+
+#command
+DROP DATABASE IF EXISTS testDB;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (0.505 seconds)
+
+
+========================================================================
+CREATE TABLE
+========================================================================
+
+Syntax:
+1.	CREATE TABLE [IF NOT EXISTS] [db_name.] table_name [(col_name data_type [COMMENT col_comment], ... [COMMENT col_comment])] [COMMENT table_comment] [ROW FORMAT row_format] [STORED AS file_format] [LOCATION hdfs_path];
+
+# command
+CREATE TABLE IF NOT EXISTS testDB.Employee (
+    Emp_ID BIGINT COMMENT 'Employee Identify',
+    Emp_Name STRING COMMENT 'Employee Name',
+    Emp_Designation STRING COMMENT 'Employee Designation',
+    Emp_Salary BIGINT COMMENT 'Employee Salary')
+COMMENT 'Emplyee Table'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (2.9 seconds)
+
+
+------------------------------------------------------------------------
+SHOW TABLE
+------------------------------------------------------------------------
+
+Syntax:
+1.	SHOW TABLES [IN database_name];
+
+# command
+SHOW TABLES IN testDB;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- +-----------+
+-- | tab_name  |
+-- +-----------+
+-- | employee  |
+-- +-----------+
+-- 1 row selected (0.28 seconds)
+
+
+------------------------------------------------------------------------
+DESCRIBE TABLE
+------------------------------------------------------------------------
+
+Syntax:
+1.	DESCRIBE [EXTENDED|FORMATTED] [db_name.] table_name[.col_name ( [.field_name])];
+
+DESCRIBE testDB.Employee;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- +------------------+------------+-----------------------+
+-- |     col_name     | data_type  |        comment        |
+-- +------------------+------------+-----------------------+
+-- | emp_id           | bigint     | Employee Identify     |
+-- | emp_name         | string     | Employee Name         |
+-- | emp_designation  | string     | Employee Designation  |
+-- | emp_salary       | bigint     | Employee Salary       |
+-- +------------------+------------+-----------------------+
+-- 4 rows selected (1.096 seconds)
+
+------------------------------------------------------------------------
+DROP TABLE (non eseguire)
+------------------------------------------------------------------------
+
+Syntax:
+1.	DROP TABLE [IF EXISTS] table_name [PURGE];
+
+# command
+DROP TABLE IF EXIST testDB.Employee PURGE;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (2.95 seconds)
+
+
+------------------------------------------------------------------------
+ALTER TABLE
+------------------------------------------------------------------------
+
+Syntax to Rename a table:
+1.	ALTER TABLE table_name RENAME TO new_table_name;
+
+Syntax to Add columns to a table:
+1.	ALTER TABLE table_name ADD COLUMNS (column1, column2);
+
+# command
+ALTER TABLE testDB.Employee ADD COLUMNS (
+Emp_Contact STRING COMMENT 'Employee Contact');
+INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (0.758 seconds)
+
+# command
+DESCRIBE testDB.Employee;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- +------------------+------------+-----------------------+
+-- |     col_name     | data_type  |        comment        |
+-- +------------------+------------+-----------------------+
+-- | emp_id           | bigint     | Employee Identify     |
+-- | emp_name         | string     | Employee Name         |
+-- | emp_designation  | string     | Employee Designation  |
+-- | emp_salary       | bigint     | Employee Salary       |
+-- | emp_contact      | string     | Employee Contact      |
+-- +------------------+------------+-----------------------+
+-- 5 rows selected (0.306 seconds)
+
+
+------------------------------------------------------------------------
+TRUNCATE TABLE (non eseguire)
+------------------------------------------------------------------------
+
+Syntax:
+1.	TRUNCATE TABLE table_name;
+
+# command
+TRUNCATE TABLE testDB.Employee;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- 5 rows affected (2.15 seconds)
+
+
+========================================================================
+CREATE INDEX(DIMENSIONE) (non eseguire)
+========================================================================
+
+Syntax:
+1.	CREATE INDEX index_name
+2.	ON TABLE base_table_name (col_name, ...)
+3.	AS 'index.handler.class.name'
+4.	[WITH DEFERRED REBUILD]
+5.	[IDXPROPERTIES (property_name=property_value, ...)]
+6.	[IN TABLE index_table_name]
+7.	[PARTITIONED BY (col_name, ...)]
+8.	[
+9.	[ ROW FORMAT ...] STORED AS ...
+10.	| STORED BY ...
+11.	]
+12.	[LOCATION hdfs_path]
+13.	[TBLPROPERTIES (...)]
+
+Indexes in Hive are not recommended.
+------------------------------------
+The reason for this is ORC. ORC has build in Indexes which allow the format to skip blocks of data during read, 
+they also support Bloom filters. Together this pretty much replicates what Hive Indexes did and they do it 
+automatically in the data format without the need to manage an external table (which is essentially what happens 
+in indexes). I would rather spend my time to properly setup the ORC tables. 
+
+
+------------------------------------------------------------------------
+DROP INDEX
+------------------------------------------------------------------------
+
+Syntax:
+1.	DROP INDEX index_name
+
+
+========================================================================
+CREATE VIEW
+========================================================================
+
+Syntax:
+1.	CREATE VIEW [IF NOT EXISTS] view_name [(column_name [COMMENT column_comment], …) ]
+2.	[COMMENT table_comment]
+3.	AS SELECT …
+
+
+
+
+
+# command
+#CREATE VIEW Employee_View AS SELECT * FROM testDB.Employee WHERE Emp_Salary > 35000;
+CREATE VIEW Employee_View AS SELECT * FROM testDB.Employee;
+
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (13.625 seconds)
+
+
+# per vedere la view
+SELECT * FROM Employee_View;
+
+
+View in Hive
+------------
+Apache Hive view is purely a logical construct (an alias for a complex query) with no physical data behind it.
+
+
+------------------------------------------------------------------------
+DROP VIEW
+------------------------------------------------------------------------
+
+Syntax:
+1.	DROP VIEW view_name;
+
+# command
+DROP VIEW Employee_View;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (3.453 seconds)
+
+
+========================================================================
+INSERT COMMAND ERROR ...
+========================================================================
+
+# create
+CREATE TABLE testDB.students (name VARCHAR(64), age INT, gpa DECIMAL(3, 2));
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- No rows affected (2.681 seconds)
+
+# describe
+DESCRIBE testDB.students;
+-- INFO  : OK
+-- INFO  : Concurrency mode is disabled, not creating a lock manager
+-- +-----------+---------------+----------+
+-- | col_name  |   data_type   | comment  |
+-- +-----------+---------------+----------+
+-- | name      | varchar(64)   |          |
+-- | age       | int           |          |
+-- | gpa       | decimal(3,2)  |          |
+-- +-----------+---------------+----------+
+-- 3 rows selected (1.755 seconds)
+
+# insert
+INSERT INTO TABLE testDB.students VALUES ('fred flintstone', 35, 1.28), ('barney rubble', 32, 2.32);
+
+-- SECOND SHELL
+-- Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.mr.MapRedTask (state=08S01,code=2)
+
+
+## anche con un semplice insert , la macchina virtuale potrebbe non riesce ad allocare la memoria sufficiente per l'operazione(dipende dalla macchina). Questo è un errore che HDFS trasmette a HIVE
+
+-- FIRST SHELL
+-- Diagnostic Messages for this Task:
+-- [2020-03-17 10:47:55.720]Container [pid=18835,containerID=container_1584437762140_0001_01_000005] is running 404883968B beyond the 'VIRTUAL' -- memory limit. Current usage: 155.0 MB of 1 GB physical memory used; 2.5 GB of 2.1 GB virtual memory used. Killing container.
+
+
+========================================================================
+VERIFY Application Status
+========================================================================
+
+# verify application  status
+
+http://localhost:8088/cluster/apps
+
+TRANSACTIONS
+...
+
+
+========================================================================
+VERIFY LOG status
+========================================================================
+
+# verify logs status
+
+http://localhost:9870/dfshealth.html#tab-overview
+
+UTILITY/LOG
+...
+
+
+------------------------------------------------------------------------
+INSERT COMMAND  
+------------------------------------------------------------------------
+
+Syntax:
+1.	INSERT INTO TABLE tablename [PARTITION (partcol1[=val1], partcol2[=val2] ...)] 
+2.	VALUES values_row [, values_row ...];
+
+# command
+INSERT INTO TABLE testDB.Employee VALUES
+(1001, 'Franco Rossi', 'IT', 30000, 'f.rossi@mail.com'),
+(1002, 'Mario Bianchi', 'IT', 33000, 'm.bianchi@mail.com'),
+(1003, 'Sergio Verdi', 'IT', 36000, 's.verdi@mail.com'),
+(1004, 'Luigi Gialli', 'IT', 39000, 'l.gialli@mail.com'),
+(1005, 'Nicola Neri', 'IT', 27000, 'n.neri@mail.com'),
+(1006, 'Aldo Rosi', 'IT', 42000, 'a.rosi@mail.com');
+
+# command
+INSERT INTO TABLE testDB.Employee VALUES (1001, 'Franco Rossi', 'IT', 30000, 'f.rossi@mail.com');
+
+# verify application  status
+http://localhost:8088/cluster/apps
+
+# verify logs  status
+http://localhost:9870/dfshealth.html#tab-overview
+
+
+------------------------------------------------------------------------
+SELECT COMMAND
+------------------------------------------------------------------------
+
+Syntax:
+1.	SELECT col1,col2 FROM tablename;
+
+# commands
+SELECT * FROM testDB.Employee;
+SELECT Emp_ID, Emp_Name, Emp_salary FROM testDB.Employee;
+SELECT Emp_Name, Emp_salary  FROM testDB.Employee WHERE Emp_salary > 35000;
+
+
+------------------------------------------------------------------------
+DELETE COMMAND
+------------------------------------------------------------------------
+
+Syntax:
+1.	DELETE FROM tablename [WHERE expression];
+
+# commands
+DELETE FROM testDB.Employee WHERE Emp_salary < 30000;
+SELECT * FROM testDB.Employee;
+
+------------------------------------------------------------------------
+UPDATE COMMAND
+------------------------------------------------------------------------
+
+Syntax:
+1.	UPDATE tablename SET column = value [, column = value ...] [WHERE expression];
+
+# commands
+UPDATE testDB.Employee SET Emp_Designation = 'UK'  WHERE Emp_Designation = 'IT';
+SELECT * FROM testDB.Employee;
+
+------------------------------------------------------------------------
+

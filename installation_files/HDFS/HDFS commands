@@ -1,0 +1,119 @@
+-----------------------------------------------------------------------------------
+SOME HADOOP HDFS COMMANDS
+-----------------------------------------------------------------------------------
+
+# 1. help (general help)
+
+hadoop fs -help  
+-----------------------------------------------------------------------------------
+Usage: hadoop fs [generic options]
+	[-appendToFile <localsrc> ... <dst>]
+	[-cat [-ignoreCrc] <src> ...]
+	[-checksum <src> ...]
+	[-chgrp [-R] GROUP PATH...]
+	[-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...]
+	[-chown [-R] [OWNER][:[GROUP]] PATH...]
+	[-copyFromLocal [-f] [-p] [-l] [-d] [-t <thread count>] <localsrc> ... <dst>]
+	[-copyToLocal [-f] [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+	[-count [-q] [-h] [-v] [-t [<storage type>]] [-u] [-x] [-e] <path> ...]
+	[-cp [-f] [-p | -p[topax]] [-d] <src> ... <dst>]
+	[-createSnapshot <snapshotDir> [<snapshotName>]]
+	[-deleteSnapshot <snapshotDir> <snapshotName>]
+	[-df [-h] [<path> ...]]
+	[-du [-s] [-h] [-v] [-x] <path> ...]
+	[-expunge]
+	[-find <path> ... <expression> ...]
+	[-get [-f] [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+	[-getfacl [-R] <path>]
+	[-getfattr [-R] {-n name | -d} [-e en] <path>]
+	[-getmerge [-nl] [-skip-empty-file] <src> <localdst>]
+	[-head <file>]
+	[-help [cmd ...]]
+	[-ls [-C] [-d] [-h] [-q] [-R] [-t] [-S] [-r] [-u] [-e] [<path> ...]]
+	[-mkdir [-p] <path> ...]
+	[-moveFromLocal <localsrc> ... <dst>]
+	[-moveToLocal <src> <localdst>]
+	[-mv <src> ... <dst>]
+	[-put [-f] [-p] [-l] [-d] <localsrc> ... <dst>]
+	[-renameSnapshot <snapshotDir> <oldName> <newName>]
+	[-rm [-f] [-r|-R] [-skipTrash] [-safely] <src> ...]
+	[-rmdir [--ignore-fail-on-non-empty] <dir> ...]
+	[-setfacl [-R] [{-b|-k} {-m|-x <acl_spec>} <path>]|[--set <acl_spec> <path>]]
+	[-setfattr {-n name [-v value] | -x name} <path>]
+	[-setrep [-R] [-w] <rep> <path> ...]
+	[-stat [format] <path> ...]
+	[-tail [-f] <file>]
+	[-test -[defsz] <path>]
+	[-text [-ignoreCrc] <src> ...]
+	[-touch [-a] [-m] [-t TIMESTAMP ] [-c] <path> ...]
+	[-touchz <path> ...]
+	[-truncate [-w] <length> <path> ...]
+	[-usage [cmd ...]]
+-----------------------------------------------------------------------------------
+
+# 2. help (help command)
+hadoop fs -help head
+-- -head <file> :
+--  Show the first 1KB of the file.
+
+# 3. mkdir (create directory)
+hadoop fs –mkdir /newDataDir
+
+# 4. ls (list files)
+hadoop fs -ls /
+
+# 5. put (copy from local to hadoop)
+haoop fs -put  ~/localfile1 /filefromlocal
+
+# 6. copyFromLocal (from local to hadoop)
+hadoop fs -copyFromLocal ~/test1 /newDataDir/copytest
+
+# 7. get (copy from hadoop to local)
+hadoop fs -get /testfile ~/copyfromhadoop
+
+# 8. copyToLocal (from hadoop to local)
+hadoop fs -copyToLocal /newDatFlair/sample ~/copysample
+
+# 9. cat (view file content)
+hadoop fs -cat /newDataDir/sample
+
+# 10. mv (rename file)
+hadoop fs -mv /DR1 /DataDir
+
+# 11. cp (copy file)
+hadoop fs -cp /newDataDir/file1 /DataDir
+
+# 12. rm (remove file/directory)
+hadoop fs –rm - r /new
+
+# 13. df (verify disk space usage)
+hadoop fs -df -h  /
+
+# 14. find (find file)
+hadoop fs -find / -name copytest
+
+# 15. usage (help usage)
+
+hadoop fs -help chmod
+-----------------------------------------------------------------------------------
+-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH... :
+  Changes permissions of a file. This works similar to the shell's chmod command
+  with a few exceptions.
+                                                                                 
+  -R           modifies the files recursively. This is the only option currently 
+               supported.                                                        
+  <MODE>       Mode is the same as mode used for the shell's command. The only   
+               letters recognized are 'rwxXt', e.g. +t,a+r,g-w,+rwx,o=r.         
+  <OCTALMODE>  Mode specifed in 3 or 4 digits. If 4 digits, the first may be 1 or
+               0 to turn the sticky bit on or off, respectively.  Unlike the     
+               shell command, it is not possible to specify only part of the     
+               mode, e.g. 754 is same as u=rwx,g=rx,o=r.                         
+  
+  If none of 'augo' is specified, 'a' is assumed and unlike the shell command, no
+  umask is applied.
+-----------------------------------------------------------------------------------
+
+hadoop fs -usage chmod
+-----------------------------------------------------------------------------------
+Usage: hadoop fs [generic options] -chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...
+-----------------------------------------------------------------------------------

@@ -1,0 +1,68 @@
+kafka broker installation
+-------------------------
+
+https://kafka.apache.org/downloads
+http://mirror.nohup.it/apache/kafka/2.4.0/kafka_2.13-2.4.0.tgz
+
+download: kafka_2.13-2.4.0.tgz
+
+sudo mkdir -p /usr/local/kafka
+
+tar -zxf /home/mdba/Downloads/kafka_2.13-2.4.0.tgz
+sudo mv /home/mdba/kafka_2.13-2.4.0 /usr/local/kafka
+
+sudo mkdir /tmp/kafka-logs
+
+--start zookeeper
+sudo /usr/local/zookeeper/apache-zookeeper-3.6.0-bin/bin/zkServer.sh start
+
+--unico comando
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-server-start.sh -daemon /usr/local/kafka/kafka_2.13-2.4.0/config/server.properties
+
+===========================================================================
+
+Create and verify a topic
+-------------------------
+
+-- unico comando
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+
+Created topic "test".
+
+-- unico comando
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic test
+
+Topic: test	PartitionCount: 1	ReplicationFactor: 1	Configs: 
+	Topic: test	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
+
+
+
+Produce messages to a test topic
+--------------------------------
+
+-- unico comando
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+
+Test Message 1
+Test Message 2
+^D
+
+
+Consume messages from a test topic
+----------------------------------
+
+-- unico comando
+sudo /usr/local/kafka/kafka_2.13-2.4.0/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+
+Test Message 1
+Test Message 2
+^C
+
+Processed a total of 2 messages
+
+===========================================================================
+
+
+
+
+

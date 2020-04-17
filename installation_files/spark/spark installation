@@ -1,0 +1,145 @@
+
+Install Apache Spark spark-3.0.0-preview2-bin-hadoop3.2 on Ubuntu 18.04 
+https://computingforgeeks.com/how-to-install-apache-spark-on-ubuntu-debian/
+---------------------------------------------------------------------------
+INSTALL Apache Spark
+---------------------------------------------------------------------------
+
+# UPDATE and UPGRADE package
+sudo apt update
+sudo apt -y upgrade
+
+# verify java version
+java -version
+-- openjdk version "1.8.0_242"
+-- OpenJDK Runtime Environment (build 1.8.0_242-8u242-b08-0ubuntu3~18.04-b08)
+-- OpenJDK 64-Bit Server VM (build 25.242-b08, mixed mode)
+
+# Download the latest release of Apache Spark from the downloads page. As of this update, this is 3.0.0.
+wget http:// http://mirror.nohup.it/apache/spark/spark-3.0.0-preview2/spark-3.0.0-preview2-bin-hadoop3.2.tgz
+
+# tar file
+tar xvf spark-3.0.0-preview2-bin-hadoop3.2.tgz
+
+# move file to /opt/spark 
+sudo mv spark-3.0.0-preview2-bin-hadoop3.2/ /opt/spark 
+
+
+--------------------------------------------------------------------------
+UPDATE /etc/bash.bashrc
+--------------------------------------------------------------------------
+
+# update .bashrc and source it
+sudo nano /etc/bash.bashrc
+
+export SPARK_HOME=/opt/spark
+export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+export PYSPARK_PYTHON=python3
+
+source /etc/bash.bashrc
+
+
+--------------------------------------------------------------------------
+UPDATE /opt/spark/bin/pyspark
+--------------------------------------------------------------------------
+
+sudo nano /opt/spark/bin/pyspark
+
+export PYSPARK_PYTHON=python3
+
+
+--------------------------------------------------------------------------
+INSTALL pyspark package
+--------------------------------------------------------------------------
+
+# install pyspark
+pip3 install pyspark
+
+# test pyspark
+python
+>>> from pyspark import SparkContext
+>>>
+>>> exit()
+
+
+--------------------------------------------------------------------------
+START spark standaone
+--------------------------------------------------------------------------
+
+# start-slave.sh (spark standalone mode)
+start-slave.sh spark://ubuntu:7077
+
+
+--------------------------------------------------------------------------
+START scala/spark shell ## o spark-shell
+--------------------------------------------------------------------------
+
+# start scala/spark shell
+/opt/spark/bin/spark-shell
+
+spark-shell ## per far partire la shell spark
+
+--
+-- Spark session available as 'spark'.spar
+-- Welcome to
+--       ____              __
+--      / __/__  ___ _____/ /__
+--     _\ \/ _ \/ _ `/ __/  '_/
+--    /___/ .__/\_,_/_/ /_/\_\   version 3.0.0-preview2
+--       /_/
+--          
+-- Using Scala version 2.12.10 (OpenJDK 64-Bit Server VM, Java 1.8.0_242)
+-- Type in expressions to have them evaluated.
+-- Type :help for more information.
+--
+scala> 
+
+# test scala println
+scala> println("Hello Spark World")
+-- Hello Spark World
+scala> 
+
+# exit scala shell
+scala> :q
+
+
+--------------------------------------------------------------------------
+START pyspark shell
+--------------------------------------------------------------------------
+
+# start pyspark shell
+/opt/spark/bin/pyspark
+--
+-- Welcome to
+--       ____              __
+--      / __/__  ___ _____/ /__
+--     _\ \/ _ \/ _ `/ __/  '_/
+--    /__ / .__/\_,_/_/ /_/\_\   version 3.0.0-preview2
+--       /_/
+-- 
+-- Using Python version 3.6.9 (default, Nov  7 2019 10:44:02)
+-- SparkSession available as 'spark'.
+--
+>>> 
+
+# test python print
+>>> print "Hello Pyspark World"
+/-- Hello Pyspark World
+>>> 
+
+# exit pyspark shell
+>>> exit()
+
+
+--------------------------------------------------------------------------
+START pyspark shell
+--------------------------------------------------------------------------
+
+# stop spark standalone
+stop-slave.sh
+-- stopping org.apache.spark.deploy.worker.Worker
+
+--------------------------------------------------------------------------
+
+
+
